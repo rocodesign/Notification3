@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   width="200" height="200"
+					   showStatusBar="false"
+					   creationComplete="windowedapplication1_creationCompleteHandler(event)"
+					   invoke="windowedapplication1_invokeHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.code11.layout.FilteredTileLayout;
+			import com.code11.notification.Notification;
+			import com.code11.notification.NotificationManager;
+			import com.code11.notification.WindowGroup;
+			
+			import mx.controls.ProgressBar;
+			import mx.events.FlexEvent;
+			
+			import spark.components.Button;
+			protected function button1_clickHandler(event:MouseEvent):void {
+				Notification.show("BUBUB","SASD");
+			}
+			
+			protected function button2_clickHandler(event:MouseEvent):void {
+				var pb:ProgressBar = new ProgressBar()
+				pb.percentWidth = 100;
+				Notification.show("BUBUB","SASD",'topRight',[pb]);
+			}
+			
+			protected function button3_clickHandler(event:MouseEvent):void {
+				var not:Notification = Notification.show("BIBIBIBI","SUSHI",'bottomRight',[new Button()]);
+				not.width = 200;
+				not.height = 150;
+			}
+			
+			protected function windowedapplication1_creationCompleteHandler(event:FlexEvent):void
+			{
+				var sb:Rectangle = Screen.mainScreen.visibleBounds;
+				
+				var filteredTileLayout:FilteredTileLayout = new FilteredTileLayout();
+				filteredTileLayout.moveDuration = 300;
+				filteredTileLayout.fadeInDuration = 150;
+				filteredTileLayout.fadeOutDuration = 150;
+				var wg:WindowGroup = new WindowGroup();
+				wg.width = sb.width;
+				wg.height = sb.height;
+				wg.name = "filteredGroup"
+					
+				NotificationManager.addGroup(wg);
+			}
+			
+			protected function windowedapplication1_invokeHandler(event:InvokeEvent):void
+			{
+				//Notification.show(event.arguments.toString(),"CMDLINEPARAMS");
+				var args:Array = event.arguments.toString().split(",");
+				var title:String;
+				var text:String;
+				title = args[0];
+				text = args[1];
+				
+				
+				var not:Notification = Notification.show(text,title,'bottomRight',[new Button()]);
+				not.width = 200;
+				not.height = 150;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Group click="button1_clickHandler(event)">
+		<s:Rect width="100" height="30" >
+			<s:fill>
+				<s:SolidColor color="0xFF0000" />
+			</s:fill>
+		</s:Rect>
+	</s:Group>
+	
+	<s:Group click="button2_clickHandler(event)" right="0">
+		<s:Rect width="100" height="30" >
+			<s:fill>
+				<s:SolidColor color="0x00FF00" />
+			</s:fill>
+		</s:Rect>
+	</s:Group>
+	
+	<s:Group click="button3_clickHandler(event)" right="0" bottom="0">
+		<s:Rect width="100" height="30" >
+			<s:fill>
+				<s:SolidColor color="0x0000FF" />
+			</s:fill>
+		</s:Rect>
+	</s:Group>
+</s:WindowedApplication>

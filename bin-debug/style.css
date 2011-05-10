@@ -1,0 +1,45 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+@namespace spark "spark.skins.spark.*";
+
+/*
+@font-face {
+	src: url('assets/fonts/Monoeger0555.ttf');
+	fontFamily: 'Pixel Arial 11';
+	embed-as-cff: true;
+	fontGridFitType: pixel;
+	fontAntiAliasType: advanced;
+	fontSharpness: -400;
+}*/
+
+@font-face {
+	src: url('assets/fonts/PIXEARG_norwegianChars.ttf');
+	fontFamily: 'Pixel Arial 11';
+	embed-as-cff: true;
+	fontGridFitType: pixel;
+	fontAntiAliasType: advanced;
+	fontSharpness: -400;
+}
+
+@font-face {
+	src: url('assets/fonts/PIXEAB__0.TTF');
+	fontFamily: 'Pixel Arial 11';
+	fontWeight: bold;
+	embed-as-cff: true;
+	fontGridFitType: pixel;
+}
+
+@font-face {
+	src: url('assets/fonts/DINBd__.ttf');
+	fontFamily: 'DIN-Bold';
+	fontWeight: bold;
+	embed-as-cff: true;
+}
+
+@font-face {
+	src: url('assets/fonts/DINMd__.ttf');
+	fontFamily: 'DIN-Medium';
+	embed-as-cff: true;
+}
+

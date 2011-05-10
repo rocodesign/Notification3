@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 showStatusBar="false"
+		 systemChrome="none"
+		 type="lightweight"
+		 alwaysInFront="true"
+		 transparent="true"
+		 creationComplete="window1_creationCompleteHandler(event)"
+		 preinitialize="preinitHandler()"
+		 addedToStage="someFunction()"
+		 alpha="0" skinClass="com.code11.notification.skin.NotificationWSkin"
+		
+		 >
+	<fx:Script>
+		<![CDATA[
+			import flash.utils.setTimeout;
+			
+			import mx.events.FlexEvent;
+			
+			import spark.components.Group;
+			
+			public static const SHOWN:String = "shown";
+			
+			public var groupName:String;
+			
+			public var autoclose:Boolean = false;
+			protected function window1_creationCompleteHandler(event:FlexEvent):void {
+				if (autoclose) setTimeout(close,5000);
+				height = 0;
+				alpha = 0;
+				setFocus();
+				remove.play([this],true);
+				remove.addEventListener(EffectEvent.EFFECT_END,onFadedIn);
+			}
+			
+			
+			private function onFadedIn(e:Event):void {
+				//dispatchEvent(new Event(SHOWN));
+			}
+			
+			public var isClosing:Boolean = false;
+			
+			import mx.events.EffectEvent;
+			override public function close():void {
+				if (parent && !isClosing) {
+					isClosing = true;
+					remove.play([this]);
+					remove.addEventListener(EffectEvent.EFFECT_END,reallyClose);
+				}
+			}
+			
+			override public function open(openWindowActive:Boolean=true):void {
+				super.open(openWindowActive);
+				dispatchEvent(new Event(Event.OPEN));
+			}
+			
+			private function reallyClose(e:Event):void {
+				super.close();
+			}
+			
+			[Bindable]
+			public var text:String;
+			
+			
+			public var closeHandler:Function;
+			private var _children:Array;
+			public var autoHide:Number = 0; 
+			
+			public function set children(value:Array):void {
+				_children = value;
+				invalidateDisplayList();
+			}
+			
+			public static function show(text:String = "", title:String = "", group:String = "default",
+														  children:Array = null,
+														  closeHandler:Function = null, autoclose:Boolean = true,
+														  iconClass:Class = null):Notification {
+				
+				
+				var notification:Notification = new Notification();
+				
+				notification.text = text;
+				notification.title = title;
+				notification.closeHandler = closeHandler;
+				//notification.icon = iconClass;
+				notification.children = children;
+				
+				notification.autoclose = autoclose;
+				notification.groupName = group;
+				
+				setTimeout(NotificationManager.getInstance().addNotification,1,notification,group);
+				return notification;
+			}
+			
+			override protected function createChildren():void {
+				super.createChildren();
+				if (_children && _children.length) {
+					for (var i:int = 0; i < _children.length; i++) {
+						addElement(_children[i]);
+					}
+				}
+			}
+			
+			protected function someFunction():void {
+				//trace(height);
+				height = 0;
+				alpha = 0;
+			}
+			
+			protected function preinitHandler():void {
+				//trace(height);
+				//height = 0;
+				//alpha = 0;
+			}
+			
+			override public function get minHeight():Number
+			{
+				return 0;
+			}
+			
+			private var effectHeight:Number;
+			override public function set height(value:Number):void {
+				super.height = value;
+				if (!effectHeight) {
+					effectHeight = value;
+					resFX.heightFrom = value;
+				}
+				trace(height);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:Sequence id="remove">
+			<s:Resize heightTo="0" duration="200" id="resFX"/>
+			<s:Fade id="fade" alphaTo="0" alphaFrom="1" />
+		</s:Sequence>
+	</fx:Declarations>
+	
+	<s:Label text="{title}" width="100%" maxDisplayedLines="1" fontFamily="DIN-Bold" fontWeight="bold"
+			 fontSize="15"/>
+	<s:Label text="{text}" width="100%" fontFamily="DIN-Medium" fontSize="11"/>
+</s:Window>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  preinitialize="window1_creationCompleteHandler(event)"
+		  >
+	<fx:Script>
+		<![CDATA[
+			import flash.utils.setTimeout;
+			
+			import mx.core.IVisualElement;
+			import mx.events.FlexEvent;
+			import mx.graphics.SolidColor;
+			
+			import spark.events.ElementExistenceEvent;
+			import spark.layouts.supportClasses.LayoutBase;
+			
+			
+			public var maxNotifications:int = 3;
+			
+			private var pendingNotifications:Array = [];
+			private var openNotifications:Array = [];
+			
+			private static var instance:NotificationsWindow;
+			public static function getInstance():NotificationsWindow {
+				if (!instance) instance = new NotificationsWindow();
+				return instance;
+			}
+			
+			private var openedWindowsLayout:LayoutBase;
+			private var _width:Number = Screen.mainScreen.visibleBounds.width;
+			private var _height:Number = Screen.mainScreen.visibleBounds.height;
+			
+			public function addNotification(notification:Notification):void {
+				var notificationByName:Notification = notificationHolder.getChildByName(notification.name) as Notification;
+				if (notificationByName) {
+					return;
+				}
+				for (var i:int = 0; i < pendingNotifications.length; i++) {
+					var pendingnot:Notification = pendingNotifications[i];
+					if (pendingnot.name == notification.name) {
+						return;
+					}
+				}
+				pendingNotifications.push(notification);
+				notification.addEventListener(Event.OPEN,onOpen);
+				notification.addEventListener(Notification.SHOWN,showNext);
+				if (openNotifications.length < maxNotifications) {
+					pendingNotifications.shift().open(true);
+				}
+			}
+			
+			public function removeNotification(name:String):void {
+				var notification:Notification = notificationHolder.getChildByName(name) as Notification;
+				if (notification) {
+					notification.close();
+					return;
+				}
+				for (var i:int = 0; i < pendingNotifications.length; i++) {
+					notification = pendingNotifications[i];
+					if (notification.name == name) {
+						pendingNotifications.splice(i,1);
+						return;
+						
+					}
+				}
+			}
+			
+			private function onOpen(e:Event):void {
+				var not:Notification = e.target as Notification;
+				not.addEventListener(Event.CLOSE,onClose);
+				not.addEventListener(FlexEvent.UPDATE_COMPLETE,onUpdate);
+				not.addEventListener(Event.RESIZE,notificationResized);
+				openNotifications.push(not);
+				//topRightLayout.updateDisplayList(Screen.mainScreen.visibleBounds.width,Screen.mainScreen.visibleBounds.height);
+			}
+			
+			private function notificationResized(e:Event):void {
+				for (var i:int = 0; i < openNotifications.length; i++) {
+					var not:Notification = openNotifications[i];
+					if (i == 0) not.move(0,0);
+					else not.move(0,openNotifications[i-1].y + openNotifications[i-1].height)
+				}
+				
+			}
+			
+			private function onClose(e:Event):void {
+				openNotifications.shift();
+				showNext(null);
+			}
+			
+			private function onUpdate(e:Event):void {
+				//topRightLayout.updateDisplayList(Screen.mainScreen.visibleBounds.width,Screen.mainScreen.visibleBounds.height);
+			}
+			
+			private function showNext(e:Event):void {
+				if (pendingNotifications.length) {
+					var nextNotification:Notification = pendingNotifications.shift();
+					nextNotification.open(true);
+				}
+			}
+			
+			
+			protected function window1_creationCompleteHandler(event:FlexEvent):void {
+				super.addElement(notificationHolder);
+			}
+			
+			override public function get width():Number {
+				return _width
+			}
+			
+			override public function get height():Number{
+				return _height;
+			}
+			
+			override public function getElementAt(index:int):IVisualElement {
+				return openNotifications[index];
+			}
+			
+			override public function get numElements():int {
+				return openNotifications.length;
+			}
+
+
+			protected function notificationHolder_updateCompleteHandler(event:Event):void {
+				width = notificationHolder.width;
+				height = notificationHolder.height;
+				var xPos:Number = Screen.mainScreen.visibleBounds.width-width;
+				var yPos:Number = Screen.mainScreen.visibleBounds.height-height;
+				
+				move(xPos,yPos);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+	</fx:Declarations>
+</s:Group>
